@@ -12,7 +12,7 @@ import (
 	"github.com/anchore/syft/syft/source"
 )
 
-func GetSBOM(userInput string) string{
+func GenSBOM(userInput string) sbom.SBOM{
 	// userInput := "test-fixture/python/requirements.txt"
 	detection, err := source.Detect(userInput, source.DefaultDetectConfig())
 	if err != nil {
@@ -40,7 +40,12 @@ func GetSBOM(userInput string) string{
 			Name:    "dhung-syft-engine",
 			Version: "1.0", // shows up in the output for many different formats
 		},
-	} 
+	}
+
+	return detectedSbom
+}
+
+func PrintSBOM(ssbom sbom.SBOM) string {
 	cjsonEncoder,err := cyclonedxjson.NewFormatEncoderWithConfig(cyclonedxjson.DefaultEncoderConfig())
 	if err != nil {
 		panic(err)
@@ -49,12 +54,12 @@ func GetSBOM(userInput string) string{
 	// another way to get return  string json
 	var buf bytes.Buffer
 
-	err = cjsonEncoder.Encode(&buf, detectedSbom)
+	err = cjsonEncoder.Encode(&buf, ssbom)
 	if err != nil {
 		panic(err)
 	}
-	return buf.String()
-	}
+	return buf.String()	
+}
 
 // func main(){
 // 	fmt.Printf(GetSBOM("test-fixture/python/requirements.txt"))

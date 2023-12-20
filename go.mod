@@ -5,19 +5,23 @@ go 1.21.3
 require (
 	github.com/anchore/grype v0.73.4
 	github.com/anchore/syft v0.98.0
+	github.com/interlynk-io/sbomasm v0.0.12
 	github.com/interlynk-io/sbomqs v0.0.28
+	github.com/samber/lo v1.39.0
 	github.com/spf13/cobra v1.8.0
 )
 
 require (
 	github.com/DependencyTrack/client-go v0.12.0 // indirect
+	github.com/Masterminds/semver/v3 v3.2.1 // indirect
 	github.com/common-nighthawk/go-figure v0.0.0-20210622060536-734e95fb86be // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/mattn/go-runewidth v0.0.15 // indirect
 	github.com/maxbrunsfeld/counterfeiter/v6 v6.7.0 // indirect
+	github.com/mitchellh/copystructure v1.2.0 // indirect
+	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/rivo/uniseg v0.4.4 // indirect
-	github.com/samber/lo v1.39.0 // indirect
 	github.com/spdx/gordf v0.0.0-20221230105357-b735bd5aac89 // indirect
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.46.1 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.46.1 // indirect

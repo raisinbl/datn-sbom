@@ -72,10 +72,3 @@ func validateNumArgs(cmd *cobra.Command, args []string) error {
 
 	return cobra.MaximumNArgs(1)(cmd, args)
 }
-
-func validatePath(path string) error {
-	if _, err := os.Stat(path); err != nil {
-		return err
-	}
-	return nil
-}

@@ -90,7 +90,14 @@ func GetVuls2(ssbom sbom.SBOM) {
 	// Load the database
 	dbCurator, _ := db.NewCurator(grypeDBConfig)
 	dbCurator.ImportFrom(localDBFilePath)
-	// dbCurator.Update()
+	updated, err := dbCurator.Update()
+	if err != nil {
+		panic(err)
+	}
+	if updated {
+		fmt.Println("Database updated")
+	}
+	
 	dbStore, _, dbCloser, _ := grype.LoadVulnerabilityDB(grypeDBConfig, true)
 	if dbCloser != nil {
 		defer dbCloser.Close()
@@ -116,7 +123,7 @@ func GetVuls2(ssbom sbom.SBOM) {
 	// pres := table.NewPresenter(pb, true)
 	pres := cyclonedxPres.NewJSONPresenter(pb)
 
-	err := pres.Present(&buffer)
+	err = pres.Present(&buffer)
 	if err != nil {
 		panic(err)
 	}

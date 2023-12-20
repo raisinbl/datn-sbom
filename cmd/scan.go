@@ -23,16 +23,6 @@ var scanCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(scanCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// scanCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// scanCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	scanCmd.Flags().StringP("path", "p", "", "Path to the project")
 	scanCmd.Flags().BoolP("vuls", "v", false, "Scan for vulnerabilities")
 }
@@ -66,7 +56,7 @@ func parseArgs(cmd *cobra.Command, args []string) (string, error) {
 
 	path, err := cmd.Flags().GetString("path")
 	if err != nil {
-		return "", err
+		return "Not a valid file/directory", err
 	}
 
 	return path, nil

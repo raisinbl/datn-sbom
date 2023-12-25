@@ -7,6 +7,7 @@ import (
 
 	"github.com/anchore/syft/syft"
 	"github.com/anchore/syft/syft/format/cyclonedxjson"
+	"github.com/anchore/syft/syft/format/table"
 	"github.com/anchore/syft/syft/pkg/cataloger"
 	"github.com/anchore/syft/syft/sbom"
 	"github.com/anchore/syft/syft/source"
@@ -45,16 +46,18 @@ func GenSBOM(userInput string) sbom.SBOM{
 	return detectedSbom
 }
 
-func PrintSBOM(ssbom sbom.SBOM) string {
-	cjsonEncoder,err := cyclonedxjson.NewFormatEncoderWithConfig(cyclonedxjson.DefaultEncoderConfig())
-	if err != nil {
-		panic(err)
+func PrintSBOM(ssbom sbom.SBOM, format Format) string {
+	var sEncoder sbom.FormatEncoder;
+	if format == CycloneDXJSON {
+		sEncoder,_ = cyclonedxjson.NewFormatEncoderWithConfig(cyclonedxjson.DefaultEncoderConfig())
+	} else if format == TableFormat {
+		sEncoder = table.NewFormatEncoder()
 	}
 
 	// another way to get return  string json
 	var buf bytes.Buffer
 
-	err = cjsonEncoder.Encode(&buf, ssbom)
+	err := sEncoder.Encode(&buf, ssbom)
 	if err != nil {
 		panic(err)
 	}
@@ -64,3 +67,4 @@ func PrintSBOM(ssbom sbom.SBOM) string {
 // func main(){
 // 	fmt.Printf(GetSBOM("test-fixture/python/requirements.txt"))
 // }
+

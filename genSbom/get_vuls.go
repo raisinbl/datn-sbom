@@ -13,10 +13,11 @@ import (
 	grypePkg "github.com/anchore/grype/grype/pkg"
 	cyclonedxPres "github.com/anchore/grype/grype/presenter/cyclonedx"
 	"github.com/anchore/grype/grype/presenter/models"
+	"github.com/wagoodman/go-presenter"
 
 	// "github.com/CycloneDX/cyclonedx-go"
 
-	// "github.com/anchore/grype/grype/presenter/table"
+	"github.com/anchore/grype/grype/presenter/table"
 
 	// syftPkg "github.com/anchore/syft/syft/pkg"
 
@@ -26,11 +27,6 @@ import (
 	"github.com/anchore/syft/syft/sbom"
 	"github.com/anchore/syft/syft/source"
 	"github.com/scylladb/go-set/strset"
-)
-
-const (
-	grypeDBListingURL string = "https://toolbox-data.anchore.io/grype/databases/listing.json"
-	// mavenSearchBaseURL = "https://search.maven.org/solrsearch/select"
 )
 
 var localDBFilePath string = path.Join("/tmp/", "grype", "db", "vulnerabilities.db")
@@ -44,7 +40,7 @@ var grypeDBConfig db.Config = db.Config{
 
 func GetVuls() {
 	fmt.Println("Hello, world!")
-	sbomBytes := PrintSBOM(GenSBOM("test-fixture/python/requirements.txt"))
+	sbomBytes := PrintSBOM(GenSBOM("test-fixture/python/requirements.txt"), CycloneDXJSON)
 	fmt.Println("-----------------")
 	// fmt.Printf(sbomBytes)
 
@@ -81,7 +77,7 @@ func GetVuls() {
 }
 
 // tham khao tu: https://github.dev/wolfi-dev/wolfictl/blob/v0.11.0/pkg/scan/finding.go
-func GetVuls2(ssbom sbom.SBOM) {
+func GetVuls2(ssbom sbom.SBOM, format Format) {
 	// ssbom := GenSBOM("test-fixture/python/requirements.txt")
 	// sbomBytes := PrintSBOM(sbom)
 	syftPkgs := ssbom.Artifacts.Packages
@@ -97,7 +93,7 @@ func GetVuls2(ssbom sbom.SBOM) {
 	if updated {
 		fmt.Println("Database updated")
 	}
-	
+
 	dbStore, _, dbCloser, _ := grype.LoadVulnerabilityDB(grypeDBConfig, true)
 	if dbCloser != nil {
 		defer dbCloser.Close()
@@ -112,22 +108,21 @@ func GetVuls2(ssbom sbom.SBOM) {
 
 	// Present the results
 	pb := models.PresenterConfig{
-		Matches: *matchesCollection,
-		Packages: grypePkgs,
+		Matches:          *matchesCollection,
+		Packages:         grypePkgs,
 		MetadataProvider: dbStore.MetadataProvider,
-		SBOM: &ssbom,
+		SBOM:             &ssbom,
 	}
 
 	var buffer bytes.Buffer
 
-	// pres := table.NewPresenter(pb, true)
-	pres := cyclonedxPres.NewJSONPresenter(pb)
+	pres := GetPresenter(format, pb)
 
 	err = pres.Present(&buffer)
 	if err != nil {
-		panic(err)
+		panic("Unable to present results, err: " + err.Error())
 	}
-	
+
 	actual := buffer.String()
 	fmt.Printf("%s", actual)
 }
@@ -162,3 +157,14 @@ func GetVuls2(ssbom sbom.SBOM) {
 
 // 	return enc.Encode(cyclonedxBOM)
 // }
+
+func GetPresenter(format Format, pb models.PresenterConfig) presenter.Presenter {
+	switch format {
+	case CycloneDXJSON:
+		return cyclonedxPres.NewJSONPresenter(pb)
+	case TableFormat:
+		return table.NewPresenter(pb, true)
+	default:
+		return nil
+	}
+}

@@ -9,11 +9,9 @@ import (
 	"sigs.k8s.io/release-utils/version"
 )
 var rootCmd = &cobra.Command{
-	Use:   "hugo",
-	Short: "Hugo is a very fast static site generator",
-	Long: `A Fast and Flexible Static Site Generator built with
-				  love by spf13 and friends in Go.
-				  Complete documentation is available at https://gohugo.io/documentation/`,
+	Use:   "datn-sbom",
+	Short: "SBOM Generator & Utilities",
+	Long: `SBOM Generator & Utilities that are used to generate SBOMs and scan for vulnerabilities`,
 	Run: func(cmd *cobra.Command, args []string) {
 	  // Do Stuff Here
 	//   genSbom.GetVuls2()
@@ -31,4 +29,11 @@ func Execute() {
 
 func init() {
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+}
+
+func validatePath(path string) error {
+	if _, err := os.Stat(path); err != nil {
+		return err
+	}
+	return nil
 }

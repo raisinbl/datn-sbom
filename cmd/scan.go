@@ -17,7 +17,7 @@ var scanCmd = &cobra.Command{
 	Use:   "scan",
 	Short: "Scan for Dependencies and Vulnerabilities",
 	Long: `Scaning for Dependencies and Vulnerabilities`,
-	Args: validateNumArgs,
+	// Args: validateNumArgs,
 	Run: Scan,	
 }
 
@@ -25,6 +25,7 @@ func init() {
 	rootCmd.AddCommand(scanCmd)
 	scanCmd.Flags().StringP("path", "p", "", "Path to the project")
 	scanCmd.Flags().BoolP("vuls", "v", false, "Scan for vulnerabilities")
+	scanCmd.Flags().StringP("format", "f", "table", "Output format")
 }
 
 func Scan(cmd *cobra.Command, args []string) {
@@ -40,11 +41,11 @@ func Scan(cmd *cobra.Command, args []string) {
 	}
 
 	sbom := genSbom.GenSBOM(path)
+	format , _ := cmd.Flags().GetString("format");
 	if cmd.Flags().Changed("vuls") {
-		fmt.Println("vuls")
-		genSbom.GetVuls2(sbom)	
+		genSbom.GetVuls2(sbom, genSbom.Format(format))
 	} else {
-		fmt.Println(genSbom.PrintSBOM(sbom))	
+		fmt.Println(genSbom.PrintSBOM(sbom, genSbom.Format(format)))	
 	}
 	
 }
@@ -61,14 +62,14 @@ func parseArgs(cmd *cobra.Command, args []string) (string, error) {
 
 	return path, nil
 }
-func validateNumArgs(cmd *cobra.Command, args []string) error {
-	if len(args) == 0 {
-		// in the case that no arguments are given and there is no piped input we want to show the help text and return with a non-0 return code.
-		if err := cmd.Help(); err != nil {
-			return fmt.Errorf("unable to display help: %w", err)
-		}
-		return fmt.Errorf("a file/directory argument is required")
-	}
+// func validateNumArgs(cmd *cobra.Command, args []string) error {
+// 	if len(args) == 0 {
+// 		// in the case that no arguments are given and there is no piped input we want to show the help text and return with a non-0 return code.
+// 		if err := cmd.Help(); err != nil {
+// 			return fmt.Errorf("unable to display help: %w", err)
+// 		}
+// 		return fmt.Errorf("a file/directory argument is required")
+// 	}
 
-	return cobra.MaximumNArgs(1)(cmd, args)
-}
+// 	return cobra.MaximumNArgs(1)(cmd, args)
+// }

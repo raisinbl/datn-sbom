@@ -30,13 +30,12 @@ var assembleCmd = &cobra.Command{
 	Long: `The assemble command will help assembling sboms into a final sbom.
 
 Basic Example:
-    $ sbomasm assemble -n "mega-app" -v "1.0.0" -t "application" in-sbom1.json in-sbom2.json
-    $ sbomasm assemble -n "mega-app" -v "1.0.0" -t "application" -f -o "mega_app_flat.sbom.json" in-sbom1.json in-sbom2.json
-
-Advanced Example:
-	$ sbomasm generate > config.yaml (edit the config file to add your settings)
-	$ sbomasm assemble -c config.yaml -o final_sbom_cdx.json in-sbom1.json in-sbom2.json
+    $ datn-sbom assemble -n "mega-app" -v "1.0.0" -t "application" in-sbom1.json in-sbom2.json
+    $ datn-sbom assemble -n "mega-app" -v "1.0.0" -t "application" -f -o "mega_app_flat.sbom.json" in-sbom1.json in-sbom2.json
 	`,
+	// Advanced Example:
+	// $ datn-sbom generate > config.yaml (edit the config file to add your settings)
+	// $ datn-sbom assemble -c config.yaml -o final_sbom_cdx.json in-sbom1.json in-sbom2.json
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) == 0 {
@@ -64,7 +63,7 @@ Advanced Example:
 func init() {
 	rootCmd.AddCommand(assembleCmd)
 	assembleCmd.Flags().StringP("output", "o", "", "path to assembled sbom, defaults to stdout")
-	assembleCmd.Flags().StringP("configPath", "c", "", "path to config file")
+	// assembleCmd.Flags().StringP("configPath", "c", "", "path to config file")
 
 	assembleCmd.Flags().StringP("name", "n", "", "name of the assembled sbom")
 	assembleCmd.Flags().StringP("version", "v", "", "version of the assembled sbom")
@@ -80,7 +79,7 @@ func init() {
 	assembleCmd.PersistentFlags().BoolP("debug", "d", false, "debug output")
 }
 
-func validatePath(path string) error {
+func validatePathAsm(path string) error {
 	stat, err := os.Stat(path)
 
 	if err != nil {
@@ -97,17 +96,17 @@ func validatePath(path string) error {
 func extractArgs(cmd *cobra.Command, args []string) (*assemble.Params, error) {
 	aParams := assemble.NewParams()
 
-	configPath, err := cmd.Flags().GetString("configPath")
-	if err != nil {
-		return nil, err
-	}
+	// configPath, err := cmd.Flags().GetString("configPath")
+	// if err != nil {
+	// 	return nil, err
+	// }
 
-	if configPath != "" {
-		if err := validatePath(configPath); err != nil {
-			return nil, err
-		}
-		aParams.ConfigPath = configPath
-	}
+	// if configPath != "" {
+	// 	if err := validatePathAsm(configPath); err != nil {
+	// 		return nil, err
+	// 	}
+	// 	aParams.ConfigPath = configPath
+	// }
 
 	output, err := cmd.Flags().GetString("output")
 	if err != nil {
@@ -144,7 +143,7 @@ func extractArgs(cmd *cobra.Command, args []string) (*assemble.Params, error) {
 	}
 
 	for _, arg := range args {
-		if err := validatePath(arg); err != nil {
+		if err := validatePathAsm(arg); err != nil {
 			return nil, err
 		}
 		aParams.Input = append(aParams.Input, arg)

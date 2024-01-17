@@ -40,6 +40,10 @@ func GenSBOM(userInput string) sbom.SBOM{
 		Descriptor: sbom.Descriptor{
 			Name:    "dhung-syft-engine",
 			Version: "1.0", // shows up in the output for many different formats
+			// Configuration: map[string]string{
+			// 	"source.name": name,
+			// 	"source.version": version,
+			// },
 		},
 	}
 
@@ -67,4 +71,3 @@ func PrintSBOM(ssbom sbom.SBOM, format Format) string {
 // func main(){
 // 	fmt.Printf(GetSBOM("test-fixture/python/requirements.txt"))
 // }
-

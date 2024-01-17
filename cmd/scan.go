@@ -6,6 +6,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+
 	// "path"
 
 	"github.com/raisinbl/datn-sbom/genSbom"
@@ -24,8 +25,10 @@ var scanCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(scanCmd)
 	scanCmd.Flags().StringP("path", "p", "", "Path to the project")
-	scanCmd.Flags().BoolP("vuls", "v", false, "Scan for vulnerabilities")
+	scanCmd.Flags().BoolP("vuls", "V", false, "Scan for vulnerabilities")
 	scanCmd.Flags().StringP("format", "f", "table", "Output format")
+	// scanCmd.Flags().StringP("name", "n", "", "Name of the project")
+	// scanCmd.Flags().StringP("version", "v", "", "Version of the project")
 }
 
 func Scan(cmd *cobra.Command, args []string) {
@@ -40,8 +43,11 @@ func Scan(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
-	sbom := genSbom.GenSBOM(path)
 	format , _ := cmd.Flags().GetString("format");
+	// name , _ := cmd.Flags().GetString("name");
+	// version , _ := cmd.Flags().GetString("version");
+
+	sbom := genSbom.GenSBOM(path)
 	if cmd.Flags().Changed("vuls") {
 		genSbom.GetVuls2(sbom, genSbom.Format(format))
 	} else {
